@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { PT } from './shared';
+import { PT } from './shared.js';
 
 /**
  * createPicker — monta o seletor de países (um bloco por continente) dentro do elemento hostId.

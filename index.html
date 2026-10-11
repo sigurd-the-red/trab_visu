@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Redesign da tabela do CPI (OWID)</title>
 <link rel="stylesheet" href="index.css">
+<script type="importmap">
+{
+  "imports": {
+    "d3": "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm",
+    "@duckdb/duckdb-wasm": "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/+esm"
+  }
+}
+</script>
 </head>
 <body>
 <h1>Redesign da tabela do Índice de Percepção da Corrupção</h1>
@@ -15,7 +23,7 @@
 </div>
 
 <h2>Visualização original</h2>
-<img src="original_viz.png" alt="Tabela original do OWID: CPI 2012 a 2024">
+<img src="data/original_viz.png" alt="Tabela original do OWID: CPI 2012 a 2024">
 <p><b>Fonte:</b> Transparency International (CPI), com processamento mínimo do <a href="https://ourworldindata.org/grapher/ti-corruption-perception-index" target="_blank">Our World in Data</a>. <b>Pergunta:</b> “Como o CPI (0 = muito corrupto, 100 = muito limpo) de cada país mudou entre 2012 e 2024?” <b>Dados:</b> país, ano, CPI (0–100) e região OWID (preenchida só nas linhas de 2023). Validação feita no DuckDB:</p>
 <table id="checks"></table>
 

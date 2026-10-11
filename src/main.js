@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
-import { Cpi } from './cpi';
-import { createPicker } from './picker';
-import { drawBars } from './plot_bars';
-import { drawLines } from './plot_lines';
+import { Cpi } from './cpi.js';
+import { createPicker } from './picker.js';
+import { drawBars } from './plot_bars.js';
+import { drawLines } from './plot_lines.js';
 
 // Estado da página: lista de países selecionáveis e os países marcados em cada design (independentes).
 let entities = [];
@@ -53,7 +53,7 @@ async function redrawLines(cpi) {
 
 /**
  * start — ponto de entrada: carrega os dados e liga a interface.
- * Como: (1) abre o DuckDB, carrega public/cpi.csv e cria as tabelas; (2) mostra a tabela de validação;
+ * Como: (1) abre o DuckDB, carrega data/cpi.csv e cria as tabelas; (2) mostra a tabela de validação;
  * (3) busca as entidades com CPI e marca a América do Sul nos dois designs; (4) cria os dois seletores de países
  * e liga os botões "Selecionar todos"/"Limpar seleção" e o menu de ordenação; (5) desenha os dois gráficos e a
  * lista de entidades sem CPI; (6) atualiza o texto de status (ou o erro, se algo falhar).

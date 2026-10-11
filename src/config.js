@@ -1,38 +1,20 @@
 import * as duckdb from '@duckdb/duckdb-wasm';
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
-import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
-import duckdb_wasm_eh from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
-import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
-
-// Pacotes do DuckDB-WASM disponíveis: "mvp" (compatível com qualquer navegador) e "eh" (com tratamento
-// de exceções nativo, mais rápido). O sufixo "?url" faz o Vite devolver o endereço final de cada arquivo.
-const MANUAL_BUNDLES = {
-  mvp: {
-    mainModule: duckdb_wasm,
-    mainWorker: mvp_worker,
-  },
-  eh: {
-    mainModule: duckdb_wasm_eh,
-    mainWorker: eh_worker,
-  },
-};
 
 /**
- * loadDb — cria e devolve uma instância assíncrona do DuckDB-WASM pronta para uso.
- * Como: (1) selectBundle testa os recursos do navegador e escolhe "eh" ou "mvp"; (2) cria um Web Worker
- * com o script do pacote escolhido, onde o banco roda sem travar a página; (3) cria o AsyncDuckDB com um
- * logger de console e o instancia carregando o módulo WebAssembly; (4) devolve o banco para quem chamou
- * (a classe Cpi abre a conexão depois).
+ * loadDb — cria e devolve uma instância assíncrona do DuckDB-WASM pronta para uso, sem precisar de bundler.
+ * Como: (1) getJsDelivrBundles lista os pacotes do DuckDB hospedados no CDN jsDelivr e selectBundle escolhe o
+ * mais adequado ao navegador; (2) como o script do worker está em outro domínio (o navegador não deixa criar um
+ * Worker direto de outra origem), cria-se um pequeno worker local via Blob que apenas executa importScripts()
+ * do script do CDN; (3) cria o AsyncDuckDB com esse worker e o instancia carregando o módulo WebAssembly;
+ * (4) libera a URL temporária do Blob e devolve o banco (a classe Cpi abre a conexão depois).
  */
 export async function loadDb() {
-  // Seleciona o pacote conforme as verificações do navegador
-  const bundle = await duckdb.selectBundle(MANUAL_BUNDLES);
+  const bundle = await duckdb.selectBundle(duckdb.getJsDelivrBundles());
 
-  // Instancia a versão assíncrona do DuckDB-WASM
-  const worker = new Worker(bundle.mainWorker);
-  const logger = new duckdb.ConsoleLogger();
-  const db = new duckdb.AsyncDuckDB(logger, worker);
+  const url = URL.createObjectURL(new Blob([`importScripts("${bundle.mainWorker}");`], { type: 'text/javascript' }));
+  const db = new duckdb.AsyncDuckDB(new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING), new Worker(url));
   await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+  URL.revokeObjectURL(url);
 
   return db;
 }

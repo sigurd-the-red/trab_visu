@@ -1,4 +1,4 @@
-import { loadDb } from './config';
+import { loadDb } from './config.js';
 
 /**
  * sqlList — transforma uma lista de nomes em texto pronto para a cláusula SQL "IN (...)".
@@ -22,11 +22,11 @@ export class Cpi {
   }
 
   /**
-   * loadCsv — traz o CSV da pasta public para dentro do DuckDB.
+   * loadCsv — traz o CSV da pasta data para dentro do DuckDB.
    * Como: faz fetch do arquivo, lê o texto e o registra como arquivo virtual "cpi.csv" no DuckDB-WASM;
    * a partir daí o SQL pode ler o arquivo com read_csv_auto('cpi.csv').
    */
-  async loadCsv(url = 'cpi.csv') {
+  async loadCsv(url = 'data/cpi.csv') {
     if (!this.db) throw new Error('Database not initialized. Please call init() first.');
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Não foi possível carregar ${url} (HTTP ${res.status})`);

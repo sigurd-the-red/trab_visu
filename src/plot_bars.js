@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { PT, regionColor, sign, showTip, hideTip } from './shared';
+import { PT, regionColor, sign, showTip, hideTip } from './shared.js';
 
 // Cores dos anos no Design 1: azul = 2012, vermelho = 2024.
 const C12 = "#2563eb", C24 = "#dc2626";

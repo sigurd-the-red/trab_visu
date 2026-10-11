@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { PT, showTip, hideTip } from './shared';
+import { PT, showTip, hideTip } from './shared.js';
 
 // Paleta categórica (13 cores): Okabe-Ito sem amarelo + Paul Tol "muted". Mais de ~10 matizes já é o limite da
 // percepção; por isso, acima disso a cor se repete e a identificação passa a depender do rótulo direto e do destaque.
