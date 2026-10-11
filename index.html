@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Redesign da tabela do CPI (OWID)</title>
+<title>Redesign da tabela do CPI</title>
 <link rel="stylesheet" href="index.css">
 <script type="importmap">
 {
@@ -15,38 +15,22 @@
 </script>
 </head>
 <body>
-<h1>Redesign da tabela do Índice de Percepção da Corrupção</h1>
-<p class="sub">Transparency International via Our World in Data · D3.js + DuckDB-WASM · <span id="status">Carregando DuckDB…</span></p>
-
-<div class="bar">
-  <label>Visualização: <select id="vizSel"><option>CPI 2012–2024 — tabela (OWID)</option></select></label>
-</div>
+<h1>Redesign da tabela do Indice de Percepção da Corrupção</h1>
 
 <h2>Visualização original</h2>
 <img src="data/original_viz.png" alt="Tabela original do OWID: CPI 2012 a 2024">
 <p><b>Fonte:</b> Transparency International (CPI), com processamento mínimo do <a href="https://ourworldindata.org/grapher/ti-corruption-perception-index" target="_blank">Our World in Data</a>. <b>Pergunta:</b> “Como o CPI (0 = muito corrupto, 100 = muito limpo) de cada país mudou entre 2012 e 2024?” <b>Dados:</b> país, ano, CPI (0–100) e região OWID (preenchida só nas linhas de 2023). Validação feita no DuckDB:</p>
 <table id="checks"></table>
 
-<h2>Crítica da original</h2>
-<ul>
-<li><b>Sparklines com escala vertical própria por linha.</b> Cada mini-gráfico é esticado para ocupar a altura da linha: a Argélia (34 → 34) parece muito volátil e o Afeganistão (8 → 17) parece tão “alto” quanto a Albânia (33 → 42). Não dá para comparar linhas nem perceber o nível; o ruído é amplificado.</li>
-<li><b>Variação relativa enganosa.</b> +9 pontos viram +113% (8 → 17) ou +27% (33 → 42). A base baixa infla o percentual, e as duas colunas de variação são redundantes e de leitura difícil.</li>
-<li><b>Ordem alfabética e rolagem.</b> A tabela tem 272 linhas, mas só uma parte tem CPI em 2012 e 2024; muitas linhas vazias (Aland, Samoa Americana, Andorra…) ocupam espaço sem explicar a ausência. Responder “quem mais mudou?” exige ordenar e rolar.</li>
-<li><b>Colunas de região vazias.</b> A região só existe para 2023, então as colunas “2012” e “2024” de região aparecem em branco e consomem largura.</li>
-<li><b>Só números, sem referência.</b> O número é preciso, mas um 42 não mostra onde está na escala 0–100, nem em relação à mediana; comparar países exige ler e comparar dígitos.</li>
-<li><b>Sem incerteza.</b> O CPI é uma agregação de pesquisas de percepção; variações pequenas são exibidas com o mesmo peso das grandes.</li>
-</ul>
-<p>Pontos fortes a preservar: valores exatos, busca e ordenação por coluna, acesso a qualquer país.</p>
-
-<h2>Design 1 — barras agrupadas por país (2012 × 2024)</h2>
-<p class="sub">Escolha os países, separados por continente. Cada país tem duas barras coladas: <b style="color:#2563eb">azul = 2012</b> e <b style="color:#dc2626">vermelho = 2024</b> (CPI de 0 a 100, eixo começando em zero). Quando há mais de um continente, eles aparecem separados no gráfico.</p>
+<h2>Design 1: barras agrupadas por pais (2012 e 2024)</h2>
+<p class="sub">Escolha os paises, separados por continente. Cada pais tem duas barras coladas: <b style="color:#2563eb">azul = 2012</b> e <b style="color:#dc2626">vermelho = 2024</b> (CPI de 0 a 100, eixo começando em zero). Quando há mais de um continente, eles aparecem separados no gráfico.</p>
 <div id="picker"></div>
 <p><button id="selAll">Selecionar todos</button> <button id="selNone">Limpar seleção</button> · Ordenar dentro de cada continente por:
 <select id="barSort"><option value="country">Nome</option><option value="s12">CPI 2012</option><option value="s24">CPI 2024</option><option value="d">Variação</option></select> · <span id="selCount"></span></p>
 <div id="chart1" class="chart"></div>
 <div id="extra"></div>
 
-<h2>Design 2 — linhas de todos os países juntos (2012–2024)</h2>
+<h2>Design 2: linhas de todos os países juntos (2012–2024)</h2>
 <p class="sub">Escolha os países, separados por continente. Todos aparecem no mesmo gráfico e na mesma escala, para serem comparados em contexto. Passe o mouse sobre uma linha para destacá-la e ver o nome e o valor do ano; o nome do país também aparece no fim da linha. Cada país tem uma cor própria; quando há mais de 13 linhas as cores se repetem, e então o nome no fim da linha e o destaque ao passar o mouse identificam o país.</p>
 <div id="picker2"></div>
 <p><button id="selAll2">Selecionar todos</button> <button id="selNone2">Limpar seleção</button> · <span id="selCount2"></span></p>
