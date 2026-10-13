@@ -1,24 +1,13 @@
 import * as d3 from 'd3';
 import { PT } from './shared.js';
 
-/**
- * createPicker — monta o seletor de países (um bloco por continente) dentro do elemento hostId.
- * Como: para cada continente cria um <details> cujo <summary> tem uma caixa "marcar o continente todo"
- * e, dentro, uma grade com uma caixa por país. As caixas alteram o conjunto "set" (países marcados) e
- * chamam onChange para redesenhar o gráfico. O estado visual (marcado / parcial) é sempre derivado do
- * conjunto. Devolve a função "change", para quem alterar o conjunto por código (botões) ressincronizar
- * as caixas e redesenhar.
- *  - hostId: seletor CSS do contêiner; entities: lista de países; set: Set com os nomes marcados;
- *  - onChange: função de redesenho.
- */
+
+// monta o seletor de paises, ou seja, permite selecionar certos paises ou outros para visualizar
 export function createPicker(hostId, entities, set, onChange) {
   const box = d3.select(hostId).html("");
 
-  /**
-   * sync — atualiza as caixas para refletir o conjunto "set".
-   * Como: marca cada caixa de país que está no conjunto; para cada continente, marca a caixa dele se todos
-   * os países estão marcados e usa o estado "indeterminate" (traço) se só alguns estão.
-   */
+  
+  //atualiza as caixas p/refletir o set 
   const sync = () => {
     box.selectAll("input[data-c]").property("checked", function () { return set.has(this.dataset.c); });
     box.selectAll("input[data-r]").each(function () {
@@ -27,10 +16,8 @@ export function createPicker(hostId, entities, set, onChange) {
     });
   };
 
-  /**
-   * change — sincroniza as caixas e chama o redesenho do gráfico.
-   * Como: executa sync() e em seguida onChange(); é o que as caixas e os botões chamam após alterar o conjunto.
-   */
+  
+  //sincroniza as caixas e chama o redesenho do grafico 
   const change = () => { sync(); onChange(); };
 
   Object.keys(PT).forEach(r => {
