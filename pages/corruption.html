@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Redesign da tabela do CPI (OWID)</title>
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="../css/index.css">
+<link rel="stylesheet" href="../css/cpi.css">
 <script type="importmap">
 {
   "imports": {
@@ -19,7 +20,7 @@
 <p class="sub">Transparency International via Our World in Data · D3.js + DuckDB-WASM · <span id="status">Carregando DuckDB…</span></p>
 
 <h2>Visualização original</h2>
-<img src="data/original_viz.png" alt="Tabela original do OWID: CPI 2012 a 2024">
+<img src="../assets/cpi.png" alt="Tabela original do OWID: CPI 2012 a 2024">
 
 
 <h2>Design 1 — barras agrupadas por país (2012 × 2024)</h2>
@@ -38,6 +39,6 @@
 <div id="chart2" class="chart"></div>
 <p id="recon" class="sub"></p>
 
-<script type="module" src="src/main.js?v=4"></script>
+<script type="module" src="../js/cpi/main.js"></script>
 </body>
 </html>

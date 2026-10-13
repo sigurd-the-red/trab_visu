@@ -1,7 +1,7 @@
 import { loadDb } from '../config';
 
 // Nome do arquivo CSV (servido a partir da pasta pública definida no vite.config.js)
-const CSV_FILE = 'global-electric-car-stock-2013-2023.csv';
+const CSV_FILE = '../../data/eletric-car.csv';
 
 // Tipos de veículo (região + tecnologia), na mesma ordem das colunas do CSV.
 // BEV = elétrico a bateria; PHEV = híbrido plug-in.

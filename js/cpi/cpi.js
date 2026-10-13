@@ -26,7 +26,7 @@ export class Cpi {
    * Como: faz fetch do arquivo, lê o texto e o registra como arquivo virtual "cpi.csv" no DuckDB-WASM;
    * a partir daí o SQL pode ler o arquivo com read_csv_auto('cpi.csv').
    */
-  async loadCsv(url = 'data/cpi.csv') {
+  async loadCsv(url = '../../data/cpi.csv') {
     if (!this.db) throw new Error('Database not initialized. Please call init() first.');
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Não foi possível carregar ${url} (HTTP ${res.status})`);
