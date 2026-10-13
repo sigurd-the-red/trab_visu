@@ -18,28 +18,12 @@
 <h1>Redesign da tabela do Índice de Percepção da Corrupção</h1>
 <p class="sub">Transparency International via Our World in Data · D3.js + DuckDB-WASM · <span id="status">Carregando DuckDB…</span></p>
 
-<div class="bar">
-  <label>Visualização: <select id="vizSel"><option>CPI 2012–2024 — tabela (OWID)</option></select></label>
-</div>
-
 <h2>Visualização original</h2>
 <img src="data/original_viz.png" alt="Tabela original do OWID: CPI 2012 a 2024">
-<p><b>Fonte:</b> Transparency International (CPI), com processamento mínimo do <a href="https://ourworldindata.org/grapher/ti-corruption-perception-index" target="_blank">Our World in Data</a>. <b>Pergunta:</b> “Como o CPI (0 = muito corrupto, 100 = muito limpo) de cada país mudou entre 2012 e 2024?” <b>Dados:</b> país, ano, CPI (0–100) e região OWID (preenchida só nas linhas de 2023). Validação feita no DuckDB:</p>
-<table id="checks"></table>
 
-<h2>Crítica da original</h2>
-<ul>
-<li><b>Sparklines com escala vertical própria por linha.</b> Cada mini-gráfico é esticado para ocupar a altura da linha: a Argélia (34 → 34) parece muito volátil e o Afeganistão (8 → 17) parece tão “alto” quanto a Albânia (33 → 42). Não dá para comparar linhas nem perceber o nível; o ruído é amplificado.</li>
-<li><b>Variação relativa enganosa.</b> +9 pontos viram +113% (8 → 17) ou +27% (33 → 42). A base baixa infla o percentual, e as duas colunas de variação são redundantes e de leitura difícil.</li>
-<li><b>Ordem alfabética e rolagem.</b> A tabela tem 272 linhas, mas só uma parte tem CPI em 2012 e 2024; muitas linhas vazias (Aland, Samoa Americana, Andorra…) ocupam espaço sem explicar a ausência. Responder “quem mais mudou?” exige ordenar e rolar.</li>
-<li><b>Colunas de região vazias.</b> A região só existe para 2023, então as colunas “2012” e “2024” de região aparecem em branco e consomem largura.</li>
-<li><b>Só números, sem referência.</b> O número é preciso, mas um 42 não mostra onde está na escala 0–100, nem em relação à mediana; comparar países exige ler e comparar dígitos.</li>
-<li><b>Sem incerteza.</b> O CPI é uma agregação de pesquisas de percepção; variações pequenas são exibidas com o mesmo peso das grandes.</li>
-</ul>
-<p>Pontos fortes a preservar: valores exatos, busca e ordenação por coluna, acesso a qualquer país.</p>
 
 <h2>Design 1 — barras agrupadas por país (2012 × 2024)</h2>
-<p class="sub">Escolha os países, separados por continente. Cada país tem <b>uma barra para cada ano, de 2012 a 2024</b>, lado a lado e da esquerda para a direita; a cor vai do <b style="color:#2563eb">azul (2012)</b> ao <b style="color:#dc2626">vermelho (2024)</b>, como mostra a legenda (CPI de 0 a 100, eixo começando em zero). Quando há mais de um continente, eles aparecem separados no gráfico. Com muitos países marcados a figura fica larga: role para o lado.</p>
+<p class="sub">Escolha os países, separados por continente. Cada país tem <b>uma barra para cada ano, de 2012 a 2024</b>, lado a lado e da esquerda para a direita; a cor vai do <b style="color:#2563eb">azul (2012)</b> ao <b style="color:#dc2626">vermelho (2024)</b>, como mostra a legenda (CPI de 0 a 100, eixo começando em zero). Quando há mais de um continente, eles aparecem separados no gráfico. Com muitos países marcados a figura fica larga: role para o lado. Quando não temos os dados de um certo ano, escrevemos s/d.</p>
 <div id="picker"></div>
 <p><button id="selAll">Selecionar todos</button> <button id="selNone">Limpar seleção</button> · Ordenar dentro de cada continente por:
 <select id="barSort"><option value="country">Nome</option><option value="s12">CPI 2012</option><option value="s24">CPI 2024</option><option value="d">Variação</option></select> · <span id="selCount"></span></p>
@@ -53,13 +37,6 @@
 <p><button id="selAll2">Selecionar todos</button> <button id="selNone2">Limpar seleção</button> · <span id="selCount2"></span></p>
 <div id="chart2" class="chart"></div>
 <p id="recon" class="sub"></p>
-
-<h2>Justificativa</h2>
-<p><b>Princípios.</b> Troquei texto e miniaturas de escala própria por <i>posição em escala comum</i> (Design 1) e por <i>cor em escala única com tamanho fixo de célula</i> (Design 2). Assim, o nível e a mudança de países diferentes se tornam comparáveis, o que as sparklines individuais impediam.</p>
-<p><b>Design 1</b> usa barras agrupadas: cada país tem uma barra para cada ano de 2012 a 2024, todas na mesma escala 0–100 e com a mesma base. Comparar comprimentos alinhados é a leitura quantitativa mais precisa, e a trajetória completa de cada país fica visível na sequência de barras vizinhas, e não só nos dois extremos. A cor varia de forma contínua do azul (2012) ao vermelho (2024), o que torna a ordem dos anos legível sem rótulo em cada barra, e a legenda dá a correspondência. O valor escrito sobre cada barra preserva a precisão numérica. O agrupamento por país e por continente e a seleção feita pelo usuário resolvem o excesso da tabela (272 linhas) sem esconder nada: qualquer país com CPI pode ser marcado, e os anos sem dado aparecem como “s/d”. Todos os países recebem o mesmo tratamento visual, sem destaques. A cor vermelha de 2024 identifica o ano, não uma avaliação de “pior”.</p>
-<p><b>Design 2</b> reúne no mesmo gráfico de linhas as séries de todos os países escolhidos, com escala vertical única (0–100) e o mesmo eixo de anos. Assim cada país é lido <i>em contexto</i>: dá para ver quem está acima ou abaixo de quem, quando as linhas se cruzam e quais trajetórias são parecidas, o que painéis separados não permitem. A seleção por continente controla o excesso de linhas; ao passar o mouse, a linha é destacada e as demais esmaecem (foco + contexto); e os nomes escritos no fim das linhas (rótulo direto) eliminam a ida e volta até uma legenda. Cada país recebe uma cor própria de uma paleta segura para daltonismo (Okabe-Ito e Paul Tol), atribuída pela ordem do valor final, de modo que linhas vizinhas nunca repetem cor; como a percepção humana separa com confiança só uma dúzia de matizes, a paleta tem 13 cores e, acima disso, a identificação se apoia nos rótulos diretos e no destaque. A grade é leve, a legenda foi eliminada em favor dos rótulos, e lacunas na linha mostram anos sem valor. Responde “como cada país evoluiu e como se compara aos demais”.</p>
-<p><b>Limites.</b> Barras não exibem a variação como número (ela está na dica ao passar o mouse e no Design 2). Percepção, não corrupção medida; a série termina em 2024; nomes de países seguem o arquivo (em inglês).</p>
-<div id="tip"></div>
 
 <script type="module" src="src/main.js?v=4"></script>
 </body>
