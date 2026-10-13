@@ -1,4 +1,4 @@
-import { loadDb } from './config.js';
+import { loadDb } from '../config.js';
 
 /**
  * sqlList — transforma uma lista de nomes em texto pronto para a cláusula SQL "IN (...)".

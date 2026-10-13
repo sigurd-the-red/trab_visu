@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redesign da tabela do CPI (OWID)</title>
+<link rel="stylesheet" href="index.css">
+<script type="importmap">
+{
+  "imports": {
+    "d3": "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm",
+    "@duckdb/duckdb-wasm": "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/+esm"
+  }
+}
+</script>
+</head>
+<body>
+<h1>Redesign da tabela do Índice de Percepção da Corrupção</h1>
+<p class="sub">Transparency International via Our World in Data · D3.js + DuckDB-WASM · <span id="status">Carregando DuckDB…</span></p>
+
+<h2>Visualização original</h2>
+<img src="data/original_viz.png" alt="Tabela original do OWID: CPI 2012 a 2024">
+
+
+<h2>Design 1 — barras agrupadas por país (2012 × 2024)</h2>
+<p class="sub">Escolha os países, separados por continente. Cada país tem <b>uma barra para cada ano, de 2012 a 2024</b>, lado a lado e da esquerda para a direita; a cor vai do <b style="color:#2563eb">azul (2012)</b> ao <b style="color:#dc2626">vermelho (2024)</b>, como mostra a legenda (CPI de 0 a 100, eixo começando em zero). Quando há mais de um continente, eles aparecem separados no gráfico. Com muitos países marcados a figura fica larga: role para o lado. Quando não temos os dados de um certo ano, escrevemos s/d.</p>
+<div id="picker"></div>
+<p><button id="selAll">Selecionar todos</button> <button id="selNone">Limpar seleção</button> · Ordenar dentro de cada continente por:
+<select id="barSort"><option value="country">Nome</option><option value="s12">CPI 2012</option><option value="s24">CPI 2024</option><option value="d">Variação</option></select> · <span id="selCount"></span></p>
+<div id="chart1" class="chart"></div>
+<p id="recon1" class="sub"></p>
+<div id="extra"></div>
+
+<h2>Design 2 — linhas de todos os países juntos (2012–2024)</h2>
+<p class="sub">Escolha os países, separados por continente. Todos aparecem no mesmo gráfico e na mesma escala, para serem comparados em contexto. Passe o mouse sobre uma linha para destacá-la e ver o nome e o valor do ano; o nome do país também aparece no fim da linha. Cada país tem uma cor própria; quando há mais de 13 linhas as cores se repetem, e então o nome no fim da linha e o destaque ao passar o mouse identificam o país.</p>
+<div id="picker2"></div>
+<p><button id="selAll2">Selecionar todos</button> <button id="selNone2">Limpar seleção</button> · <span id="selCount2"></span></p>
+<div id="chart2" class="chart"></div>
+<p id="recon" class="sub"></p>
+
+<script type="module" src="src/main.js?v=4"></script>
+</body>
+</html>

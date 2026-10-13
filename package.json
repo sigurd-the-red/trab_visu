@@ -1,9 +1,18 @@
 {
-    "name": "cpi-redesign",
+    "name": "d3js-vis",
     "private": true,
     "version": "1.0.0",
     "type": "module",
     "scripts": {
-        "start": "npx serve ."
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "d3": "^7.9.0",
+        "@duckdb/duckdb-wasm": "^1.29.0"
+    },
+    "devDependencies": {
+        "vite": "^6.3.5"
     }
 }

@@ -1,6 +1,6 @@
-import { loadDb } from "./config";
+import { loadDb } from "../config";
 
-const CSV_FILE = "lazy-cats.csv";
+const CSV_FILE = "../../data/lazy-cats.csv";
 
 export class CatsData {
   async init() {

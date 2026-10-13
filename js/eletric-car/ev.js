@@ -1,4 +1,4 @@
-import { loadDb } from './config';
+import { loadDb } from '../config';
 
 // Nome do arquivo CSV (servido a partir da pasta pública definida no vite.config.js)
 const CSV_FILE = 'global-electric-car-stock-2013-2023.csv';
