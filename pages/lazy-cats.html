@@ -5,7 +5,6 @@
     <title>Lazy Cats — How Lazy Are Pet Cats Really?</title>
     <link rel="stylesheet" href="../css/index.css" />
     <link rel="stylesheet" href="../css/lazy-cats.css" />
-
   </head>
 
   <body>
@@ -18,11 +17,22 @@
     </header>
 
     <div>
-      <img src="../assets/lazy-cats.png" alt="visualização original" style="height: 60vh" />
+      <img
+        src="../assets/lazy-cats.png"
+        alt="visualização original"
+        style="height: 60vh"
+      />
     </div>
 
     <div class="main-container">
-      <p id="status">Iniciando...</p>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p id="status">Iniciando...</p>
+
+        <div class="buttom-container">
+          <button id="loadBtn">Load Chart</button>
+          <button id="clearBtn">Clear Chart</button>
+        </div>
+      </div>
       <h3>Redesign A</h3>
 
       <div class="scroll-container">
@@ -33,10 +43,6 @@
 
       <div class="scroll-container">
         <svg id="lineSvg" width="1000" height="800" style="margin: auto"></svg>
-      </div>
-      <div class="buttom-container">
-        <button id="loadBtn">Load Chart</button>
-        <button id="clearBtn">Clear Chart</button>
       </div>
     </div>
 

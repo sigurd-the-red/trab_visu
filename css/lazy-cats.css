@@ -50,7 +50,6 @@ body > div > img {
 }
 
 #status {
-  margin: 0 0 28px;
   padding: 12px 16px;
   border: 1px solid #dbeafe;
   border-radius: 8px;
@@ -197,7 +196,6 @@ body > div > img {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 24px;
 }
 
 button {
