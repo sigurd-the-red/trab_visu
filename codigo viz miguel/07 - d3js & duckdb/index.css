@@ -1,0 +1,115 @@
+body {
+    margin: 20px;
+
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.25em;
+  }
+
+.main-container {
+    /* altura automática para acomodar o SVG maior e os botões */
+    display: flex;
+    background-color: #efefef;
+
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center; 
+    align-items: center; 
+}
+
+/* Área com barra de rolagem horizontal para o gráfico largo */
+.scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.buttom-container {
+    display: flex;
+
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center; 
+    align-items: center; 
+}
+
+svg {
+    /* display: block evita o espaço extra sob o SVG dentro do contêiner de rolagem */
+    display: block;
+    margin: 10px;
+    background-color: #ffffff;
+
+    border-radius: 8px;
+    border: #bfbfbf solid 1px;
+}
+
+/* Linhas de grade horizontais discretas */
+.gridline {
+    stroke: #e0e0e0;
+    stroke-width: 1;
+}
+
+/* Grade mais escura dentro da faixa ampliada (0 a 2) do gráfico de linhas, para contrastar com o fundo */
+.gridline-forte {
+    stroke: #8f8f8f;
+    stroke-width: 1.3;
+}
+
+/* Rótulos de dados no topo das colunas: fonte maior (16px) e em negrito */
+.rotulo {
+    font-size: 16px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    fill: #111;
+}
+
+/* Título do eixo Y e textos da legenda */
+.axis-label,
+.legend-text {
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    fill: #333;
+}
+
+/* Nota de fonte dos dados, abaixo do gráfico */
+.fonte {
+    font-size: 0.7em;
+    color: #666;
+}
+
+button {
+    margin: 10px;
+}
+
+/* Linha de status/erro acima do gráfico */
+#status {
+    margin: 5px 0 0 0;
+    font-size: 0.7em;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+}
+
+#status.erro {
+    color: #b00020;
+    font-weight: bold;
+}
+
+/* Números dos eixos (anos e valores) em fonte maior, para acompanhar o zoom do gráfico */
+.axis text {
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Títulos acima de cada gráfico */
+.titulo-grafico {
+    margin: 10px 0 0 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8em;
+    color: #333;
+}
+
+/* Valor dentro da pílula colorida dos rótulos do gráfico de linhas */
+.rotulo-linha {
+    font-size: 15px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
