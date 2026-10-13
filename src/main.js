@@ -6,6 +6,7 @@ import { drawLines } from './plot_lines.js';
 
 // Estado da página: lista de países selecionáveis e os países marcados em cada design (independentes).
 let entities = [];
+let cpi;                           // camada de dados (DuckDB), criada em start() e usada pelos dois gráficos
 const selectedBars = new Set();    // Design 1
 const selectedLines = new Set();   // Design 2
 
@@ -29,12 +30,17 @@ function renderNoCpi(rows) {
 }
 
 /**
- * redrawBars — redesenha o Design 1 com o estado atual.
- * Como: chama drawBars com a lista de países e o conjunto de marcados; é a função passada ao seletor e ao
- * menu de ordenação.
+ * redrawBars — redesenha o Design 1 com o estado atual, mostrando erros no próprio gráfico.
+ * Como: espera drawBars (assíncrona, pois agora consulta no DuckDB todos os anos dos países marcados); se der
+ * erro, escreve a mensagem dentro de #chart1 e no console. É a função passada ao seletor e ao menu de ordenação.
  */
-function redrawBars() {
-  drawBars(entities, selectedBars);
+async function redrawBars() {
+  try {
+    await drawBars(cpi, entities, selectedBars);
+  } catch (err) {
+    d3.select("#chart1").html(`<p style="padding:8px;color:#b91c1c">Erro no Design 1: ${err.message}</p>`);
+    console.error(err);
+  }
 }
 
 /**
@@ -61,7 +67,7 @@ async function redrawLines(cpi) {
 async function start() {
   const status = document.getElementById("status");
   try {
-    const cpi = new Cpi();
+    cpi = new Cpi();
     await cpi.init();
     await cpi.loadCsv();
     await cpi.prepare();
@@ -78,7 +84,7 @@ async function start() {
     document.getElementById("selAll2").onclick = () => { entities.forEach(e => selectedLines.add(e.country)); changeLines(); };
     document.getElementById("selNone2").onclick = () => { selectedLines.clear(); changeLines(); };
 
-    redrawBars();
+    await redrawBars();
     renderNoCpi(await cpi.withoutCpi());
     await redrawLines(cpi);
     status.textContent = "Pronto.";
