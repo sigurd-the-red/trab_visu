@@ -7,7 +7,7 @@ const LINE_COLORS = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#56B4E9", "#E6
 //escreve o nome do pais em maiusculo
 const label = c => c.toUpperCase();
 
-//afasta verticalmente rotulos que se sobreporiam.
+//afasta verticalmente rotulos que se sobreporiam
 function spread(items, gap, hi) {
   items.sort((a, b) => a.y - b.y);
   items.forEach((d, i) => d.ly = i ? Math.max(d.y, items[i - 1].ly + gap) : d.y);
