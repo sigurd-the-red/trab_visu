@@ -37,7 +37,7 @@ async function redrawLines(cpi) {
   }
 }
  
- //carrega os dados e liga a interface.
+ //carrega os dados e liga a interface
 async function start() {
   const status = document.getElementById("status");
   try {
