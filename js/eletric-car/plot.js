@@ -1,9 +1,9 @@
 import * as d3 from 'd3';
 
-// Ordem dos tipos (igual à legenda original) e paleta de alto contraste.
+// Ordem dos tipos (igual à legenda original) e paleta de alto contraste
 // Cada região tem um matiz próprio (vermelho, azul, verde, roxo); dentro da região,
 // o BEV usa a versão escura e o PHEV a versão clara/vibrante, de modo que
-// nenhum par de cores fica parecido.
+// nenhum par de cores fica parecido
 const TIPOS = [
     'China BEV', 'China PHEV',
     'Europe BEV', 'Europe PHEV',
@@ -30,7 +30,7 @@ const fmt = d3.format('.1f');
  * @param data    array de { ano, tipo, estoque } (formato longo, vindo do DuckDB)
  * @param margens margens internas do SVG
  */
-// Margens: "top" menor (a legenda saiu do topo) e "bottom" maior, para caber o eixo dos anos e a legenda abaixo do gráfico.
+// Margens: "top" menor (a legenda saiu do topo) e "bottom" maior, para caber o eixo dos anos e a legenda abaixo do gráfico
 export async function loadChart(data, margens = { left: 70, right: 30, top: 50, bottom: 120 }) {
     const svg = d3.select('#barSvg');
     if (svg.empty()) return;
@@ -101,9 +101,9 @@ export async function loadChart(data, margens = { left: 70, right: 30, top: 50, 
         .attr('class', 'ano')
         .attr('transform', ano => `translate(${x0(ano)}, 0)`);
 
-    // Dados de cada grupo = registros daquele ano.
+    // Dados de cada grupo = registros daquele ano
     // Dentro de cada ano, ordena as colunas de forma crescente pelo valor (em empate, mantém a ordem da legenda)
-    // e guarda a posição (pos) de cada coluna dentro do grupo.
+    // e guarda a posição (pos) de cada coluna dentro do grupo
     const porAno = new Map(
         [...d3.group(data, d => d.ano)].map(([ano, regs]) => [
             ano,
@@ -140,8 +140,8 @@ export async function loadChart(data, margens = { left: 70, right: 30, top: 50, 
 }
 
 /**
- * Desenha a legenda abaixo do gráfico, em duas linhas de 4 itens.
- * Usada tanto pelo gráfico de colunas quanto pelo de linhas.
+ * Desenha a legenda abaixo do gráfico, em duas linhas de 4 itens
+ * Usada tanto pelo gráfico de colunas quanto pelo de linhas
  */
 function desenharLegenda(svg, margens, innerH, cor) {
     const itemW = 260; // largura fixa de cada item da legenda (o SVG é largo)
@@ -160,10 +160,10 @@ function desenharLegenda(svg, margens, innerH, cor) {
 }
 
 /**
- * Afasta verticalmente rótulos que se sobreporiam.
- * Recebe os itens já ordenados de cima para baixo (campo y = posição desejada) e define yRot = posição final.
+ * Afasta verticalmente rótulos que se sobreporiam
+ * Recebe os itens já ordenados de cima para baixo (campo y = posição desejada) e define yRot = posição final
  * Enquanto dois rótulos vizinhos estiverem a menos de "folga" px, eles são empurrados em sentidos opostos;
- * depois todos são mantidos entre limiteTopo e limiteBase.
+ * depois todos são mantidos entre limiteTopo e limiteBase
  */
 function evitarSobreposicao(itens, folga, limiteTopo, limiteBase) {
     itens.forEach(d => { d.yRot = d.y; });
@@ -185,8 +185,8 @@ function evitarSobreposicao(itens, folga, limiteTopo, limiteBase) {
 }
 
 /**
- * Desenha o gráfico de linhas: uma linha por tipo de veículo, mostrando a evolução do estoque ao longo dos anos.
- * Usa as mesmas margens, cores e posições dos anos do gráfico de colunas (os pontos ficam alinhados com cada grupo de colunas).
+ * Desenha o gráfico de linhas: uma linha por tipo de veículo, mostrando a evolução do estoque ao longo dos anos
+ * Usa as mesmas margens, cores e posições dos anos do gráfico de colunas (os pontos ficam alinhados com cada grupo de colunas)
  * @param data    array de { ano, tipo, estoque } (formato longo, vindo do DuckDB)
  * @param margens margens internas do SVG
  */
@@ -207,7 +207,7 @@ export async function loadLineChart(data, margens = { left: 70, right: 30, top: 
     const x0 = d3.scaleBand().domain(anos).range([0, innerW]).paddingInner(0.15);
     const cx = ano => x0(ano) + x0.bandwidth() / 2;
     // Escala vertical em milhões, linear POR PARTES: a faixa de 0 a 2 ocupa bem mais altura que as demais,
-    // para que diferenças pequenas (como 0.0 e 0.1) fiquem visíveis. Cada segmento continua linear.
+    // para que diferenças pequenas (como 0.0 e 0.1) fiquem visíveis. Cada segmento continua linear
     const yMax = d3.scaleLinear().domain([0, d3.max(data, d => d.estoque)]).nice().domain()[1];
     // Pontos de quebra do eixo (valores) e a fração da altura total que cada um alcança
     const quebras  = [0, 2, 6, 12].filter(v => v < yMax);
@@ -316,10 +316,10 @@ export async function loadLineChart(data, margens = { left: 70, right: 30, top: 
         .append('title')
         .text(d => `${d.tipo} (${d.ano}): ${fmt(d.estoque)} milhões`);
 
-    // ---- Rótulos de dados em TODOS os pontos, sem sobreposição.
+    // ---- Rótulos de dados em TOOS os pontos, sem sobreposição.
     // Para cada ano, os rótulos formam uma coluna à direita dos pontos. Eles são ordenados de cima para baixo
     // e afastados uns dos outros (mínimo de 22px) por evitarSobreposicao(). Cada rótulo é uma "pílula" na cor da
-    // série (identifica a linha mesmo quando deslocado) ligada ao seu ponto por uma linha fina.
+    // série (identifica a linha mesmo quando deslocado) ligada ao seu ponto por uma linha fina
     const ALTURA = 20, LARGURA = 50, FOLGA = 22, DESLOC = 18;
     const porAno = d3.group(data, d => d.ano);
     const rotulos = [];

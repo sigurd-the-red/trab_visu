@@ -24,7 +24,7 @@ function spread(items, gap, hi) {
 /**
  * DESIGN 2
  * consulta os dados dos paises por meio do metodo cpi.series, da cor p/cada pais, desenha uma linha por pais
- * escreve o nome no fim da linha. No hover, destaca o pais.
+ * escreve o nome no fim da linha. No hover, destaca o pais
  */
 export async function drawLines(cpi, entities, selected) {
   const list = entities.filter(e => selected.has(e.country)).map(e => e.country);

@@ -3,8 +3,8 @@ import { loadDb } from '../config.js';
 // Nome do arquivo CSV (servido a partir da pasta pública definida no vite.config.js)
 const CSV_FILE = '../../data/electric-car.csv';
 
-// Tipos de veículo (região + tecnologia), na mesma ordem das colunas do CSV.
-// BEV = elétrico a bateria; PHEV = híbrido plug-in.
+// Tipos de veículo (região + tecnologia), na mesma ordem das colunas do CSV
+// BEV = elétrico a bateria; PHEV = híbrido plug-in
 const TIPOS = [
     'China BEV', 'China PHEV',
     'Europe BEV', 'Europe PHEV',
@@ -12,11 +12,11 @@ const TIPOS = [
     'Rest of the world BEV', 'Rest of the world PHEV'
 ];
 // Nomes das colunas do arquivo: a primeira (ano) tem célula vazia no cabeçalho original,
-// por isso definimos os nomes manualmente em vez de depender da detecção automática.
+// por isso definimos os nomes manualmente em vez de depender da detecção automática
 const COLUNAS = ['ano', ...TIPOS];
 
 /**
- * Encapsula o acesso aos dados de estoque global de carros elétricos via DuckDB-wasm.
+ * Encapsula o acesso aos dados de estoque global de carros elétricos via DuckDB-wasm
  */
 export class ElectricCars {
     // Inicializa o DuckDB e abre uma conexão
@@ -37,16 +37,16 @@ export class ElectricCars {
             throw new Error(`Não foi possível carregar ${CSV_FILE} (HTTP ${res.status}).`);
         const texto = await res.text();
 
-        // O Vite devolve o index.html (status 200) quando o arquivo não existe na pasta pública.
-        // Detectamos isso para dar uma mensagem de erro clara.
+        // O Vite devolve o index.html (status 200) quando o arquivo não existe na pasta pública
+        // Detectamos isso para dar uma mensagem de erro clara
         if (texto.trimStart().startsWith('<'))
             throw new Error(`${CSV_FILE} não foi encontrado na pasta pública ("00 - data"): o servidor devolveu HTML.`);
 
-        // Limpeza do texto antes de entregá-lo ao DuckDB:
+        // Limpeza do texto antes de entregá-lo ao DuckDB
         //  - normaliza qualquer tipo de quebra de linha (\r\n, \r ou \n) para \n;
-        //  - descarta as linhas de metadados (fonte, termos, unidade) e o cabeçalho,
-        //    mantendo só as linhas de dados, que começam com o ano (4 dígitos) e ";".
-        // Isso evita que o detector automático de CSV do DuckDB se confunda com o arquivo.
+        //  - descarta as linhas de metadados (fonte, termos, unidade) e o cabeçalho
+        //    mantendo só as linhas de dados, que começam com o ano (4 dígitos) e ";"
+        // Isso evita que o detector automático de CSV do DuckDB se confunda com o arquivo
         const linhas = texto
             .replace(/^﻿/, '')                       // remove BOM (marca de ordem de bytes), se houver
             .split(/\r\n|\r|\n/)
@@ -58,14 +58,14 @@ export class ElectricCars {
         await this.db.registerFileText(CSV_FILE, linhas.join('\n') + '\n');
 
         // Define explicitamente nomes e tipos das colunas (ano inteiro, demais DOUBLE),
-        // sem depender da detecção automática de formato.
+        // sem depender da detecção automática de formato
         const colunas = COLUNAS
             .map(c => `'${c}': '${c === 'ano' ? 'INTEGER' : 'DOUBLE'}'`)
             .join(', ');
 
         // Cria a tabela larga. Opções: separador ";", sem cabeçalho (já removido acima),
         // fim de linha "\n" (já normalizado) e strict_mode desligado para tolerar pequenas
-        // irregularidades; os tipos vêm de "columns", sem detecção automática.
+        // irregularidades; os tipos vêm de "columns", sem detecção automática
         await this.conn.query(`
             CREATE OR REPLACE TABLE ${this.table} AS
                 SELECT *
@@ -78,8 +78,8 @@ export class ElectricCars {
         `);
     }
 
-    // SQL que transforma a tabela larga em formato "longo" (ano, tipo, estoque).
-    // Usamos UNION ALL (uma SELECT por tipo), que funciona em qualquer versão do DuckDB.
+    // SQL que transforma a tabela larga em formato "longo" (ano, tipo, estoque)
+    // Usamos UNION ALL (uma SELECT por tipo), que funciona em qualquer versão do DuckDB
     longSql() {
         return TIPOS.map(t => `
             SELECT CAST(ano AS INTEGER) AS ano,

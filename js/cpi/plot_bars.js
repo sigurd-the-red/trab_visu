@@ -9,7 +9,7 @@ const yearColor = d3.scaleLinear().domain([2012, 2024]).range(["#8fd3c1", "#0b1f
 /**
  * DESIGN 1
  * consulta os dados por meio do metodo cpi.series, da uma cor p/cada ano, desenha uma barra por ano
- * p/cada pais. escreve o valor no topo da barra e o nome do pais embaixo. No hover, mostra ano e valor da barra.
+ * p/cada pais. escreve o valor no topo da barra e o nome do pais embaixo. No hover, mostra ano e valor da barra
  */
 export async function drawBars(cpi, entities, selected) {
   const key = document.getElementById("barSort").value, regs = Object.keys(PT);
