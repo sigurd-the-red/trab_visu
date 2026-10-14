@@ -65,7 +65,7 @@ export class Cpi {
                        WHERE score IS NOT NULL AND country IN (${sqlList(countries)}) ORDER BY country, year`);
   }
 
-  //conta quantos valores de CPI o CSV tem para os países pedidos.
+  //conta quantos valores de CPI o CSV tem para os países pedidos
   async countValues(countries) {
     return (await this.query(`SELECT COUNT(score)::INT AS c FROM allrows WHERE country IN (${sqlList(countries)})`))[0].c;
   }
