@@ -1,13 +1,158 @@
-  :root { --ink:#1f2933; --mute:#6b7280; --line:#e5e7eb; --br:#e4572e; --up:#1b7f79; --down:#c2410c; }
-  body { font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); max-width:980px; margin:0 auto; padding:20px 16px 64px }
-  h1 { font-size:1.6rem; margin:.2em 0 } h2 { margin-top:2em; border-bottom:2px solid var(--line); padding-bottom:.2em }
-  .sub { color:var(--mute); margin-top:0 } .bar { display:flex; gap:16px; flex-wrap:wrap; align-items:center; background:#f8fafc; border:1px solid var(--line); padding:8px 12px; border-radius:6px }
-  img { max-width:100%; border:1px solid var(--line); border-radius:6px }
-  table { border-collapse:collapse; font-size:.9rem } td,th { padding:3px 12px; border-bottom:1px solid var(--line); text-align:left }
-  .chart { overflow-x:auto } svg text { font:12px system-ui,sans-serif; fill:var(--ink) } .axis path,.axis line { stroke:#cbd5e1 } .axis text { fill:var(--mute) }
-  .ln { transition:opacity .1s } .ln.dim { opacity:.14 } .ln.hot .vis { stroke-width:3.6px !important; opacity:1 !important } .ln.hot text { font-weight:700 }
-  .halo { paint-order:stroke; stroke:#fff; stroke-width:3px }
-  #tip { position:fixed; pointer-events:none; background:#111827; color:#fff; padding:4px 8px; border-radius:4px; font-size:12px; opacity:0 }
-  select { font:inherit; padding:2px 6px } .scroll { max-height:720px; overflow:auto; border:1px solid var(--line) }
-  details { margin:8px 0 } #picker details { border:1px solid var(--line); border-radius:6px; padding:4px 10px; margin:4px 0 }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:2px 12px; font-size:.85rem; margin:6px 0 10px 18px } button { font:inherit; padding:2px 10px } .none { columns:3; font-size:.85rem; color:var(--mute) } .none div { break-inside:avoid }
+:root {
+  --ink: #1f2933;
+  --mute: #6b7280;
+  --line: #e5e7eb;
+  --br: #e4572e;
+  --up: #1b7f79;
+  --down: #c2410c;
+}
+
+body {
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px 16px 64px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin: 0.2em 0;
+}
+
+h2 {
+  margin-top: 2em;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 0.2em;
+}
+
+.sub {
+  color: var(--mute);
+  margin-top: 0;
+}
+
+.bar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+img {
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+td,
+th {
+  padding: 3px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.chart {
+  overflow-x: auto;
+}
+
+svg text {
+  font: 12px system-ui, sans-serif;
+  fill: var(--ink);
+}
+
+.axis path,
+.axis line {
+  stroke: #cbd5e1;
+}
+
+.axis text {
+  fill: var(--mute);
+}
+
+.ln {
+  transition: opacity 0.1s;
+}
+
+.ln.dim {
+  opacity: 0.14;
+}
+
+.ln.hot .vis {
+  stroke-width: 3.6px !important;
+  opacity: 1 !important;
+}
+
+.ln.hot text {
+  font-weight: 700;
+}
+
+.halo {
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+}
+
+#tip {
+  position: fixed;
+  pointer-events: none;
+  background: #111827;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0;
+}
+
+select {
+  font: inherit;
+  padding: 2px 6px;
+}
+
+button {
+  font: inherit;
+  padding: 2px 10px;
+}
+
+.scroll {
+  max-height: 720px;
+  overflow: auto;
+  border: 1px solid var(--line);
+}
+
+details {
+  margin: 8px 0;
+}
+
+#picker details {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 10px;
+  margin: 4px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 2px 12px;
+  font-size: 0.85rem;
+  margin: 6px 0 10px 18px;
+}
+
+.none {
+  columns: 3;
+  font-size: 0.85rem;
+  color: var(--mute);
+}
+
+.none div {
+  break-inside: avoid;
+}
