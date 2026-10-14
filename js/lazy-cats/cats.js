@@ -3,11 +3,13 @@ import { loadDb } from "../config";
 const CSV_FILE = "../../data/lazy-cats.csv";
 
 export class CatsData {
+  // Inicializa o banco de dados e cria uma conexão para executar consultas.
   async init() {
     this.db = await loadDb();
     this.conn = await this.db.connect();
   }
 
+  // Carrega o arquivo CSV e transforma seus dados em uma tabela SQL.
   async loadCsv() {
     const response = await fetch(CSV_FILE);
     const csvText = await response.text();
@@ -25,12 +27,13 @@ export class CatsData {
     `);
   }
 
+  // Executa uma consulta SQL e converte os resultados em objetos JavaScript.
   async query(sql) {
     const result = await this.conn.query(sql);
     return result.toArray().map((row) => row.toJSON());
   }
 
-  // Design A: 
+  // Dados de atividade dos gatos para o gráfico de dispersão.
   async getActivityData() {
     return this.query(`
       SELECT
@@ -48,8 +51,7 @@ export class CatsData {
     `);
   }
 
-  // Design B: percentual de repouso por gato e estação.
-  // Repouso = deitar + sentar.
+  // Dados de repouso para o gráfico de barras.
   async getRestData() {
     return this.query(`
       SELECT

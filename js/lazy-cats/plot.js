@@ -1,11 +1,9 @@
 import * as d3 from "d3";
 
-// ======================================================
-// CONFIGURAÇÕES
-// ======================================================
-
+// Ordem das categorias de peso
 const ORDEM_PESO = ["Ideal", "Overweight", "Heavy", "Obese"];
 
+// Define uma cor para cada categoria
 const CORES_PESO = {
   Ideal: "#BFDBFE",
   Overweight: "#60A5FA",
@@ -13,13 +11,7 @@ const CORES_PESO = {
   Obese: "#1E3A8A",
 };
 
-const ROTULOS_PESO = {
-  Ideal: "Ideal",
-  Overweight: "Sobrepeso",
-  Heavy: "Acima do peso",
-  Obese: "Obeso",
-};
-
+// Define os quatro painéis que serão apresentados em cada gráfico
 const PAINEIS = [
   {
     season: "Winter",
@@ -47,19 +39,20 @@ const MARGEM = {
   top: 65,
   right: 0,
   bottom: 65,
-  left: 65,
+  left: 45,
 };
 
 const GAP_X = 35;
 const GAP_Y = 45;
 
+// formatação numérica com uma casa decimal
 const fmt = d3.format(".1f");
 
-// ======================================================
-// NORMALIZAÇÃO E UTILITÁRIOS
-// ======================================================
-
+// Normaliza o nome da estação para facilitar a comparação
 function normalizarEstacao(valor) {
+  // Converte o valor para texto, remove espaços externos
+  // e transforma todas as letras em minúsculas
+  // O operador ?? substitui null ou undefined por uma string vazia
   const texto = String(valor ?? "")
     .trim()
     .toLowerCase();
@@ -70,11 +63,11 @@ function normalizarEstacao(valor) {
   return texto;
 }
 
+// Normaliza o nome do ambiente
 function normalizarAmbiente(valor) {
   const texto = String(valor ?? "")
     .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
+    .toLowerCase();
 
   if (texto === "indoor") return "Indoor";
   if (texto === "indoor outdoor") return "Indoor Outdoor";
@@ -82,16 +75,18 @@ function normalizarAmbiente(valor) {
   return texto;
 }
 
+// Verifica se um valor pode ser utilizado como número
+// Retorna null para valores ausentes, vazios ou inválidos
 function numeroValido(valor) {
   if (valor === null || valor === undefined || String(valor).trim() === "") {
     return null;
   }
 
   const numero = Number(valor);
-
   return Number.isFinite(numero) ? numero : null;
 }
 
+// Seleciona o elemento SVG e recupera suas dimensões
 function prepararSvg(seletor) {
   const svg = d3.select(seletor);
 
@@ -103,11 +98,17 @@ function prepararSvg(seletor) {
 
   const viewBox = svg.attr("viewBox");
 
+  // Usa os atributos width e height como dimensões iniciais
+  // Se forem ausentes/inválidos, utiliza valores padrão
   let width = Number(svg.attr("width")) || 900;
   let height = Number(svg.attr("height")) || 620;
 
   if (viewBox) {
+    // Divide os valores do viewBox e converte cada um para número
+    // O formato esperado é: "minX minY largura altura"
     const valores = viewBox.trim().split(/\s+/).map(Number);
+
+    // Utiliza a largura e a altura do viewBox, se forem válidas
     width = valores[2] || width;
     height = valores[3] || height;
   }
@@ -115,18 +116,20 @@ function prepararSvg(seletor) {
   return { svg, width, height };
 }
 
+// Calcula as dimensões dos quatro painéis organizados em uma grade 2 × 2
 function obterDimensoes(width, height) {
   const colunas = 2;
   const linhas = 2;
 
   return {
     colunas,
-    linhas,
     larguraPainel: (width - MARGEM.left - MARGEM.right - GAP_X) / colunas,
     alturaPainel: (height - MARGEM.top - MARGEM.bottom - GAP_Y) / linhas,
   };
 }
 
+// Cria um grupo SVG para um painel e posiciona seu título
+// O parâmetro indice determina a posição do painel na grade
 function criarPainel(svg, painel, indice, dimensoes) {
   const { colunas, larguraPainel, alturaPainel } = dimensoes;
 
@@ -148,13 +151,12 @@ function criarPainel(svg, painel, indice, dimensoes) {
     .attr("y", 0)
     .text(painel.titulo);
 
-  return {
-    grupo,
-    larguraPainel,
-    alturaPainel,
-  };
+  return grupo;
 }
 
+// Seleciona os registros que pertencem a determinado painel
+// Os dados precisam corresponder à estação, ao ambiente
+// e a uma categoria de condição corporal conhecida
 function filtrarPainel(data, painel) {
   return data.filter(
     (d) =>
@@ -164,12 +166,15 @@ function filtrarPainel(data, painel) {
   );
 }
 
+// Adiciona uma legenda na parte inferior do SVG
+// O parâmetro tipo define se os símbolos serão círculos ou retângulos
 function adicionarLegenda(svg, height, tipo = "circulo") {
   const legenda = svg
     .append("g")
     .attr("transform", `translate(${MARGEM.left},${height - 15})`);
 
   ORDEM_PESO.forEach((peso, indice) => {
+    // Cria um grupo para cada item da legenda
     const item = legenda.append("g").attr("transform", `translate(${indice * 190},0)`);
 
     if (tipo === "circulo") {
@@ -193,10 +198,12 @@ function adicionarLegenda(svg, height, tipo = "circulo") {
       .attr("class", "legend-text")
       .attr("x", 18)
       .attr("y", tipo === "circulo" ? 0 : 10)
-      .text(ROTULOS_PESO[peso]);
+      .text(peso);
   });
 }
 
+// Exibe uma mensagem no centro da área do gráfico
+// quando não existem registros para a combinação selecionada
 function adicionarMensagemVazia(grafico, largura, altura) {
   grafico
     .append("text")
@@ -207,16 +214,10 @@ function adicionarMensagemVazia(grafico, largura, altura) {
     .text("Sem dados para esta combinação");
 }
 
-// ======================================================
-// DESIGN A — SCATTERPLOT
-//
-// X: tempo deitado
-// Y: tempo sentado
-// Cada ponto representa um gato.
-// ======================================================
-
+// Exporta a função para que o arquivo principal possa utilizá-la
+// O gráfico compara o tempo deitado com o tempo sentado dos gatos
 export function loadScatterPlot(data) {
-  const { svg, width, height } = prepararSvg("#barSvg");
+  const { svg, width, height } = prepararSvg("#dotSvg");
   const dimensoes = obterDimensoes(width, height);
 
   const larguraGrafico = dimensoes.larguraPainel - 105;
@@ -227,10 +228,11 @@ export function loadScatterPlot(data) {
   const escalaY = d3.scaleLinear().domain([0, 100]).range([alturaGrafico, 0]);
 
   PAINEIS.forEach((painel, indice) => {
-    const { grupo } = criarPainel(svg, painel, indice, dimensoes);
-
+    const grupo = criarPainel(svg, painel, indice, dimensoes);
     const grafico = grupo.append("g").attr("transform", "translate(75,25)");
 
+    // Filtra os registros do painel
+    // Depois, converte os valores deitado e sentado para números
     const registros = filtrarPainel(data, painel)
       .map((d) => ({
         ...d,
@@ -239,19 +241,20 @@ export function loadScatterPlot(data) {
       }))
       .filter((d) => d.lyingNum !== null && d.sittingNum !== null);
 
-    // Grade.
+    // Cria a grade horizontal do gráfico
     grafico
       .append("g")
       .attr("class", "grid")
       .call(d3.axisLeft(escalaY).ticks(5).tickSize(-larguraGrafico).tickFormat(""));
 
+    // Cria a grade vertical do gráfico
     grafico
       .append("g")
       .attr("class", "grid")
       .attr("transform", `translate(0,${alturaGrafico})`)
       .call(d3.axisBottom(escalaX).ticks(5).tickSize(-alturaGrafico).tickFormat(""));
 
-    // Eixos.
+    // Desenha o eixo X na parte inferior do gráfico
     grafico
       .append("g")
       .attr("transform", `translate(0,${alturaGrafico})`)
@@ -262,6 +265,7 @@ export function loadScatterPlot(data) {
           .tickFormat((d) => `${d}%`),
       );
 
+    // Desenha o eixo Y à esquerda do gráfico
     grafico.append("g").call(
       d3
         .axisLeft(escalaY)
@@ -269,7 +273,7 @@ export function loadScatterPlot(data) {
         .tickFormat((d) => `${d}%`),
     );
 
-    // Rótulos.
+    // Adiciona o rótulo do eixo X
     grafico
       .append("text")
       .attr("class", "axis-label")
@@ -278,6 +282,7 @@ export function loadScatterPlot(data) {
       .attr("text-anchor", "middle")
       .text("Tempo deitado (%)");
 
+    // Adiciona o rótulo do eixo Y
     grafico
       .append("text")
       .attr("class", "axis-label")
@@ -287,7 +292,7 @@ export function loadScatterPlot(data) {
       .attr("text-anchor", "middle")
       .text("Tempo sentado (%)");
 
-    // Pontos.
+    // Desenha os pontos que representam os gatos
     grafico
       .selectAll(".ponto-gato")
       .data(registros)
@@ -299,46 +304,29 @@ export function loadScatterPlot(data) {
       .attr("fill", (d) => CORES_PESO[d.bcs_ord])
       .attr("fill-opacity", 0.8)
       .attr("stroke", (d) => CORES_PESO[d.bcs_ord])
-      .attr("stroke-width", 0.8)
-      .append("title")
-      .text(
-        (d) =>
-          `Gato: ${d.cat_id}\n` +
-          `Condição corporal: ${ROTULOS_PESO[d.bcs_ord]}\n` +
-          `Deitado: ${fmt(d.lyingNum)}%\n` +
-          `Sentado: ${fmt(d.sittingNum)}%`,
-      );
+      .attr("stroke-width", 0.8);
 
+    // Se o painel não tiver registros válidos, mostra uma mensagem
     if (registros.length === 0) {
       adicionarMensagemVazia(grafico, larguraGrafico, alturaGrafico);
     }
   });
 
+  // Adiciona a legenda que explica as cores dos pontos
   adicionarLegenda(svg, height, "circulo");
 }
 
-// ======================================================
-// DESIGN B — BARRAS HORIZONTAIS
-//
-// X: média de resting
-// Y: categoria de peso
-// Cada barra mostra a média e a quantidade de registros.
-// ======================================================
-
+// Exporta a função que constrói o gráfico de barras horizontais
+// O objetivo é comparar o tempo médio de repouso entre as categorias
 export function loadBarChart(data) {
-  const { svg, width, height } = prepararSvg("#lineSvg");
+  const { svg, width, height } = prepararSvg("#barSvg");
   const dimensoes = obterDimensoes(width, height);
 
-  const margemEsquerda = 115;
-  const margemDireita = 65;
-  const margemSuperior = 25;
-  const margemInferior = 45;
+  const larguraGrafico = dimensoes.larguraPainel - MARGEM.left;
+  const alturaGrafico = dimensoes.alturaPainel - MARGEM.top - MARGEM.bottom;
 
-  const larguraGrafico = dimensoes.larguraPainel - margemEsquerda - margemDireita;
-
-  const alturaGrafico = dimensoes.alturaPainel - margemSuperior - margemInferior;
-
-  // Calcula a média e a quantidade de registros válidos.
+  // Prepara os dados resumidos para cada painel
+  // Cada resumo conterá a média e a quantidade de registros por categoria
   const resumos = PAINEIS.map((painel) => {
     const registros = filtrarPainel(data, painel);
 
@@ -351,51 +339,55 @@ export function loadBarChart(data) {
       return {
         peso,
         media: valores.length ? d3.mean(valores) : null,
-        n: valores.length,
       };
     });
 
+    // Retorna os dados do painel junto com as categorias resumidas
     return {
       ...painel,
       categorias,
     };
   });
 
-  // Escala comum para todos os painéis.
+  // Encontra a maior média entre todas as categorias e painéis
   const maxValor =
     d3.max(resumos, (painel) => d3.max(painel.categorias, (d) => d.media ?? 0)) ?? 0;
 
+  // Define o limite inicial da escala horizontal
+  // Acrescenta 10% ao maior valor para deixar espaço após as barras
+  // Math.max garante que o limite seja pelo menos 1
   const maxEscala = Math.max(1, maxValor * 1.1);
 
+  // Percorre os painéis e desenha cada gráfico de barras
   PAINEIS.forEach((painel, indice) => {
     const resumo = resumos[indice];
+    const grupo = criarPainel(svg, painel, indice, dimensoes);
 
-    const { grupo } = criarPainel(svg, painel, indice, dimensoes);
+    // Cria a área interna do gráfico
+    const grafico = grupo.append("g").attr("transform", `translate(${MARGEM.left},25)`);
 
-    const grafico = grupo
-      .append("g")
-      .attr("transform", `translate(${margemEsquerda},${margemSuperior})`);
-
+    // Cria a escala linear do eixo X
     const escalaX = d3
       .scaleLinear()
       .domain([0, maxEscala])
       .nice()
       .range([0, larguraGrafico]);
 
+    // Cria a escala de faixas do eixo Y
     const escalaY = d3
       .scaleBand()
       .domain(ORDEM_PESO)
       .range([0, alturaGrafico])
       .padding(0.25);
 
-    // Grade vertical.
+    // Desenha a grade vertical
     grafico
       .append("g")
       .attr("class", "grid")
       .call(d3.axisBottom(escalaX).ticks(5).tickSize(alturaGrafico).tickFormat(""))
       .call((g) => g.select(".domain").remove());
 
-    // Eixo X.
+    // Desenha o eixo X na parte inferior do gráfico
     grafico
       .append("g")
       .attr("transform", `translate(0,${alturaGrafico})`)
@@ -406,12 +398,11 @@ export function loadBarChart(data) {
           .tickFormat((d) => `${fmt(d)}%`),
       );
 
-    // Eixo Y.
-    grafico
-      .append("g")
-      .call(d3.axisLeft(escalaY).tickFormat((peso) => ROTULOS_PESO[peso] ?? peso));
+    // Desenha o eixo Y com os nomes das categorias
+    grafico.append("g").call(d3.axisLeft(escalaY).tickFormat((peso) => peso));
 
-    // Barras.
+    // Seleciona as barras existentes e associa os dados resumidos
+    // join("rect") cria um retângulo para cada categoria
     grafico
       .selectAll(".barra")
       .data(resumo.categorias)
@@ -422,18 +413,9 @@ export function loadBarChart(data) {
       .attr("width", (d) => (d.media === null ? 0 : escalaX(d.media)))
       .attr("height", escalaY.bandwidth())
       .attr("rx", 3)
-      .attr("fill", (d) => CORES_PESO[d.peso])
-      .append("title")
-      .text(
-        (d) =>
-          `${ROTULOS_PESO[d.peso]}\n` +
-          `Tempo médio de descanso: ${
-            d.media === null ? "sem dados" : `${fmt(d.media)}%`
-          }\n` +
-          `Quantidade de registros: ${d.n}`,
-      );
+      .attr("fill", (d) => CORES_PESO[d.peso]);
 
-    // Média e quantidade ao final da barra.
+    // Adiciona o valor numérico ao lado de cada barra que possui dados
     grafico
       .selectAll(".valor-barra")
       .data(resumo.categorias.filter((d) => d.media !== null))
@@ -444,7 +426,7 @@ export function loadBarChart(data) {
       .attr("dy", "0.35em")
       .text((d) => `${fmt(d.media)}%`);
 
-    // Categorias sem dados.
+    // Identifica as categorias que não possuem dados para calcular a média
     resumo.categorias
       .filter((d) => d.media === null)
       .forEach((d) => {
@@ -457,7 +439,7 @@ export function loadBarChart(data) {
           .text("Sem dados");
       });
 
-    // Rótulo do eixo X.
+    // Adiciona o título do eixo horizontal
     grafico
       .append("text")
       .attr("class", "axis-label")
@@ -470,11 +452,8 @@ export function loadBarChart(data) {
   adicionarLegenda(svg, height, "retangulo");
 }
 
-// ======================================================
-// LIMPEZA
-// ======================================================
-
+// Remove os elementos desenhados dentro dos dois SVGs
 export function clearChart() {
+  d3.select("#dotSvg").selectAll("*").remove();
   d3.select("#barSvg").selectAll("*").remove();
-  d3.select("#lineSvg").selectAll("*").remove();
 }
